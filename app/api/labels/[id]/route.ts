@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { db } from '@/src/db/index';
 import { labelsTable } from '@/src/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 // PUT - Actualizar etiqueta
 export async function PUT(
@@ -10,15 +9,6 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-
     const { id: labelId } = await params;
     const body = await request.json();
     const { name, color, filter, promptFilter } = body;
@@ -30,11 +20,11 @@ export async function PUT(
       );
     }
 
-    // Verificar que la etiqueta pertenezca al usuario
+    // Verificar que la etiqueta exista
     const existingLabel = await db
       .select()
       .from(labelsTable)
-      .where(and(eq(labelsTable.id, labelId), eq(labelsTable.userId, userId)))
+      .where(eq(labelsTable.id, labelId))
       .limit(1);
 
     if (existingLabel.length === 0) {
@@ -52,7 +42,7 @@ export async function PUT(
         filter: filter?.trim() || null,
         promptFilter: promptFilter?.trim() || null,
       })
-      .where(and(eq(labelsTable.id, labelId), eq(labelsTable.userId, userId)))
+      .where(eq(labelsTable.id, labelId))
       .returning();
 
     return NextResponse.json(updatedLabel[0]);
@@ -71,22 +61,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-
     const { id: labelId } = await params;
 
-    // Verificar que la etiqueta pertenezca al usuario
+    // Verificar que la etiqueta exista
     const existingLabel = await db
       .select()
       .from(labelsTable)
-      .where(and(eq(labelsTable.id, labelId), eq(labelsTable.userId, userId)))
+      .where(eq(labelsTable.id, labelId))
       .limit(1);
 
     if (existingLabel.length === 0) {
@@ -96,13 +77,11 @@ export async function DELETE(
       );
     }
 
-    // Eliminar relaciones en email_labels (se hace automáticamente por CASCADE)
-    // Eliminar la etiqueta
     await db
       .delete(labelsTable)
-      .where(and(eq(labelsTable.id, labelId), eq(labelsTable.userId, userId)));
+      .where(eq(labelsTable.id, labelId));
 
-    return NextResponse.json({ message: 'Etiqueta eliminada exitosamente' });
+    return NextResponse.json({ message: 'Etiqueta eliminada correctamente' });
   } catch (error) {
     console.error('Error eliminando etiqueta:', error);
     return NextResponse.json(

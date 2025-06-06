@@ -1,0 +1,50 @@
+import { relations } from "drizzle-orm/relations";
+import { emails, attachments, labels, emailLabels, users, webhookConfig } from "./schema";
+
+export const attachmentsRelations = relations(attachments, ({one}) => ({
+	email: one(emails, {
+		fields: [attachments.emailId],
+		references: [emails.id]
+	}),
+}));
+
+export const emailsRelations = relations(emails, ({one, many}) => ({
+	attachments: many(attachments),
+	emailLabels: many(emailLabels),
+	user: one(users, {
+		fields: [emails.userId],
+		references: [users.id]
+	}),
+}));
+
+export const emailLabelsRelations = relations(emailLabels, ({one}) => ({
+	label: one(labels, {
+		fields: [emailLabels.labelId],
+		references: [labels.id]
+	}),
+	email: one(emails, {
+		fields: [emailLabels.emailId],
+		references: [emails.id]
+	}),
+}));
+
+export const labelsRelations = relations(labels, ({one, many}) => ({
+	emailLabels: many(emailLabels),
+	user: one(users, {
+		fields: [labels.userId],
+		references: [users.id]
+	}),
+}));
+
+export const usersRelations = relations(users, ({many}) => ({
+	emails: many(emails),
+	labels: many(labels),
+	webhookConfigs: many(webhookConfig),
+}));
+
+export const webhookConfigRelations = relations(webhookConfig, ({one}) => ({
+	user: one(users, {
+		fields: [webhookConfig.userId],
+		references: [users.id]
+	}),
+}));

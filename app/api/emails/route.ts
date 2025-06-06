@@ -1,22 +1,12 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { db } from '@/src/db/index';
 import { emailsTable, emailLabelsTable } from '@/src/db/schema';
 import { eq, desc } from 'drizzle-orm';
 
-// GET - Obtener todos los correos del usuario con sus etiquetas
+// GET - Obtener todos los correos con sus etiquetas
 export async function GET() {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-
-    // Obtener correos del usuario
+    // Obtener todos los correos
     const emails = await db
       .select({
         id: emailsTable.id,
@@ -34,7 +24,6 @@ export async function GET() {
         createdAt: emailsTable.createdAt,
       })
       .from(emailsTable)
-      .where(eq(emailsTable.userId, userId))
       .orderBy(desc(emailsTable.receivedAt));
 
     // Obtener etiquetas asociadas a cada correo

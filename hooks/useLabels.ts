@@ -8,15 +8,11 @@ export function useLabels() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Sincronizar usuario y cargar etiquetas desde la API
+  // Cargar etiquetas desde la API
   const fetchLabels = async () => {
     try {
       setIsLoading(true);
       
-      // Primero sincronizar el usuario
-      await fetch('/api/sync-user', { method: 'POST' });
-      
-      // Luego cargar etiquetas
       const response = await fetch('/api/labels');
       
       if (!response.ok) {

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { db } from '@/src/db/index';
 import { emailsTable, emailLabelsTable } from '@/src/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -14,24 +13,15 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      );
-    }
-
     const { id: emailId } = await params;
     const body = await request.json();
     const { status, archived, labels } = body;
 
-    // Verificar que el email pertenezca al usuario
+    // Verificar que el email exista
     const existingEmail = await db
       .select()
       .from(emailsTable)
-      .where(and(eq(emailsTable.id, emailId), eq(emailsTable.userId, userId)))
+      .where(eq(emailsTable.id, emailId))
       .limit(1);
 
     if (existingEmail.length === 0) {
@@ -57,7 +47,7 @@ export async function PUT(
       await db
         .update(emailsTable)
         .set(updateData)
-        .where(and(eq(emailsTable.id, emailId), eq(emailsTable.userId, userId)));
+        .where(eq(emailsTable.id, emailId));
     }
 
     // Actualizar etiquetas si se proporcionaron
@@ -83,7 +73,7 @@ export async function PUT(
     const updatedEmail = await db
       .select()
       .from(emailsTable)
-      .where(and(eq(emailsTable.id, emailId), eq(emailsTable.userId, userId)))
+      .where(eq(emailsTable.id, emailId))
       .limit(1);
 
     // Obtener etiquetas del correo

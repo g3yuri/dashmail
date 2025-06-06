@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/db/index';
-import { emailsTable, attachmentsTable, usersTable } from '@/src/db/schema';
+import { emailsTable, attachmentsTable } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
 
 // Tipo para el webhook de Postmark Inbound
@@ -71,21 +71,6 @@ function generateSummary(textBody: string, maxLength: number = 200): string {
   return truncated + '...';
 }
 
-async function findUserByEmail(email: string): Promise<string | null> {
-  try {
-    const users = await db
-      .select({ id: usersTable.id })
-      .from(usersTable)
-      .where(eq(usersTable.email, email))
-      .limit(1);
-    
-    return users.length > 0 ? users[0].id : null;
-  } catch (error) {
-    console.error('Error finding user by email:', error);
-    return null;
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body: PostmarkInboundWebhook = await request.json();
@@ -95,18 +80,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Datos del webhook incompletos' },
         { status: 400 }
-      );
-    }
-
-    // Encontrar el usuario por el email de destino
-    const recipientEmail = body.ToFull[0].Email;
-    const userId = await findUserByEmail(recipientEmail);
-    
-    if (!userId) {
-      console.log(`Usuario no encontrado para el email: ${recipientEmail}`);
-      return NextResponse.json(
-        { error: 'Usuario no encontrado' },
-        { status: 404 }
       );
     }
 
@@ -128,6 +101,7 @@ export async function POST(request: NextRequest) {
     const emailId = generateId();
     const receivedAt = new Date(body.Date);
     const summary = generateSummary(body.TextBody || body.StrippedTextReply);
+    const recipientEmail = body.ToFull[0].Email;
 
     // Insertar el email en la base de datos
     await db.insert(emailsTable).values({
@@ -142,7 +116,6 @@ export async function POST(request: NextRequest) {
       summary: summary,
       status: 'pending',
       archived: false,
-      userId: userId,
       receivedAt: receivedAt,
     });
 
@@ -161,7 +134,7 @@ export async function POST(request: NextRequest) {
       await db.insert(attachmentsTable).values(attachmentValues);
     }
 
-    console.log(`Email procesado exitosamente: ${body.MessageID} para usuario ${userId}`);
+    console.log(`Email procesado exitosamente: ${body.MessageID}`);
 
     return NextResponse.json(
       { 

@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { Label } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Archive, Inbox } from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Plus, Edit, Trash2, Archive, Inbox, MoreVertical } from 'lucide-react';
 import { LabelDialog } from './LabelDialog';
 import { ConfirmDialog } from './ConfirmDialog';
 
@@ -109,7 +115,7 @@ export function LabelSidebar({
           <div key={label.id} className="group relative">
             <Button
               variant={selectedLabel === label.id ? "secondary" : "ghost"}
-              className="w-full justify-start gap-2 h-9 pr-12"
+              className="w-full justify-start gap-2 h-9 pr-8"
               onClick={() => onSelectLabel(label.id)}
             >
               <div
@@ -124,23 +130,31 @@ export function LabelSidebar({
               )}
             </Button>
             
-            <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={() => handleEditLabel(label)}
-              >
-                <Edit className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-destructive hover:text-destructive"
-                onClick={() => handleDeleteClick(label)}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
+            <div className="absolute right-1 top-1/2 -translate-y-1/2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <MoreVertical className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleEditLabel(label)}>
+                    <Edit className="h-3 w-3 mr-2" />
+                    Editar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleDeleteClick(label)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="h-3 w-3 mr-2" />
+                    Eliminar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}

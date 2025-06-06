@@ -18,11 +18,8 @@ export const labelsTable = sqliteTable("labels", {
   color: text("color").notNull(),
   filter: text("filter"), // Filtro automático opcional
   promptFilter: text("prompt_filter"), // Filtro por prompt opcional
-  userId: text("user_id").notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
   createdAt: int("created_at", { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  userIdIdx: index("labels_user_id_idx").on(table.userId),
-}));
+});
 
 // Tabla de correos electrónicos
 export const emailsTable = sqliteTable("emails", {
@@ -37,11 +34,9 @@ export const emailsTable = sqliteTable("emails", {
   summary: text("summary"), // Resumen generado automáticamente
   status: text("status").notNull().default("pending"), // pending, in-progress, completed, reviewed
   archived: int("archived", { mode: 'boolean' }).notNull().default(false),
-  userId: text("user_id").notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
   receivedAt: int("received_at", { mode: 'timestamp' }).notNull(),
   createdAt: int("created_at", { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 }, (table) => ({
-  userIdIdx: index("emails_user_id_idx").on(table.userId),
   messageIdIdx: index("emails_message_id_idx").on(table.messageId),
   statusIdx: index("emails_status_idx").on(table.status),
 }));

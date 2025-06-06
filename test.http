@@ -1,0 +1,119 @@
+### Prueba del hook
+POST http://localhost:3000/api/hook
+Content-Type: application/json
+
+{
+  "FromName": "g3yuri",
+  "MessageStream": "inbound",
+  "From": "g3yuri@gmail.com",
+  "FromFull": {
+    "Email": "g3yuri@gmail.com",
+    "Name": "g3yuri",
+    "MailboxHash": ""
+  },
+  "To": "cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com",
+  "ToFull": [
+    {
+      "Email": "cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com",
+      "Name": "",
+      "MailboxHash": "45cbeee19701cd8ba1d8c053e1878cb0"
+    }
+  ],
+  "Cc": "",
+  "CcFull": [],
+  "Bcc": "",
+  "BccFull": [],
+  "OriginalRecipient": "cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com",
+  "Subject": "Fwd: AA",
+  "MessageID": "a3ac1f2a-7285-45bf-a4a7-142a15e82aa9",
+  "ReplyTo": "",
+  "MailboxHash": "45cbeee19701cd8ba1d8c053e1878cb0",
+  "Date": "Fri, 6 Jun 2025 01:03:35 -0500",
+  "TextBody": "eee\n\n---------- Forwarded message ---------\nDe: g3yuri <g3yuri@gmail.com>\nDate: vie, 6 jun 2025 a la(s) 12:52 a.m.\nSubject: AA\nTo: <\ncac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com\n>\n\n\nzzz\n\n-- \n\n*Yuri QuispeCelular 959007780*\n\n\n\n-- \n\n*Yuri QuispeCelular 959007780*\n",
+  "HtmlBody": "<div dir=\"ltr\">eee<br><br><div class=\"gmail_quote gmail_quote_container\"><div dir=\"ltr\" class=\"gmail_attr\">---------- Forwarded message ---------<br>De: <strong class=\"gmail_sendername\" dir=\"auto\">g3yuri</strong> <span dir=\"auto\">&lt;<a href=\"mailto:g3yuri@gmail.com\">g3yuri@gmail.com</a>&gt;</span><br>Date: vie, 6 jun 2025 a la(s) 12:52 a.m.<br>Subject: AA<br>To:  &lt;<a href=\"mailto:cac0731fa0b48a89b6bb9d12bca81e59%2B45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com\">cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com</a>&gt;<br></div><br><br><div dir=\"ltr\"><div>zzz</div><div><br></div><span class=\"gmail_signature_prefix\">-- </span><br><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div><div dir=\"ltr\"><div><b><font color=\"#073763\">Yuri Quispe<br>Celular 959007780</font></b><br><br></div></div></div></div></div></div></div></div>\n</div><div><br clear=\"all\"></div><div><br></div><span class=\"gmail_signature_prefix\">-- </span><br><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div><div dir=\"ltr\"><div><b><font color=\"#073763\">Yuri Quispe<br>Celular 959007780</font></b><br><br></div></div></div></div></div></div></div></div>\n",
+  "StrippedTextReply": "eee\n\n---------- Forwarded message ---------\nDe: g3yuri <g3yuri@gmail.com>\nDate: vie, 6 jun 2025 a la(s) 12:52 a.m.\nSubject: AA\nTo: <\ncac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com",
+  "Tag": "",
+  "Headers": [
+    {
+      "Name": "Return-Path",
+      "Value": "<g3yuri@gmail.com>"
+    },
+    {
+      "Name": "Received",
+      "Value": "by p-pm-inboundg01c-aws-euwest1c.inbound.postmarkapp.com (Postfix, from userid 996)\tid 78D2C405449; Fri,  6 Jun 2025 06:03:48 +0000 (UTC)"
+    },
+    {
+      "Name": "X-Spam-Checker-Version",
+      "Value": "SpamAssassin 3.4.0 (2014-02-07) on\tp-pm-inboundg01c-aws-euwest1c"
+    },
+    {
+      "Name": "X-Spam-Status",
+      "Value": "No"
+    },
+    {
+      "Name": "X-Spam-Score",
+      "Value": "-0.1"
+    },
+    {
+      "Name": "X-Spam-Tests",
+      "Value": "DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FROM,HTML_MESSAGE,\tRCVD_IN_DNSWL_BLOCKED,RCVD_IN_MSPIKE_H2,RCVD_IN_VALIDITY_RPBL_BLOCKED,\tRCVD_IN_VALIDITY_SAFE_BLOCKED,RCVD_IN_ZEN_BLOCKED_OPENDNS,SPF_HELO_NONE,\tSPF_PASS,URIBL_DBL_BLOCKED_OPENDNS,URIBL_ZEN_BLOCKED_OPENDNS"
+    },
+    {
+      "Name": "Received-SPF",
+      "Value": "pass (gmail.com ... _spf.google.com: Sender is authorized to use 'g3yuri@gmail.com' in 'mfrom' identity (mechanism 'include:_netblocks.google.com' matched)) receiver=p-pm-inboundg01c-aws-euwest1c; identity=mailfrom; envelope-from=\"g3yuri@gmail.com\"; helo=mail-ed1-f43.google.com; client-ip=209.85.208.43"
+    },
+    {
+      "Name": "Received",
+      "Value": "from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])\t(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))\t(No client certificate requested)\tby p-pm-inboundg01c-aws-euwest1c.inbound.postmarkapp.com (Postfix) with ESMTPS id 3DFD8453CA4\tfor <cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com>; Fri,  6 Jun 2025 06:03:48 +0000 (UTC)"
+    },
+    {
+      "Name": "Received",
+      "Value": "by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-60780d74c85so137223a12.2        for <cac0731fa0b48a89b6bb9d12bca81e59+45cbeee19701cd8ba1d8c053e1878cb0@inbound.postmarkapp.com>; Thu, 05 Jun 2025 23:03:48 -0700 (PDT)"
+    },
+    {
+      "Name": "DKIM-Signature",
+      "Value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20230601; t=1749189827; x=1749794627; darn=inbound.postmarkapp.com;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :from:to:cc:subject:date:message-id:reply-to;        bh=j/Js+inzlOZAx8qQM/5aOfsr7kWNjMYN3QgiiuIi+XE=;        b=SahrAasqgSYtHi8ZIfwWkAnNyjAUeer1ysHhhUzihbvY0HynOfwDfjrbLz2uYqmUKf         Esydtg5xz6kUsULB1FFLaas7d7vUMF9PT2XzzllYhqBXk5oZ3vSl7sEPVZ1Q4z9HJhql         +SvldQN8azj0hURP3YTQclxyzuytd4khM7fFdeY5cT0Zomm8lAU/EedZWyP48DIyfvMN         3aYbzmpvZUiMeFwYgrD8l12jrqo/FrVmU+UJdCANUB/8gWyfkzcrzf4NcFROKq+mfdxy         K8IuRZiNDUOTRBo6PVcOOGHOmeO/wQamu4xhToGuRpqu3r0mWXGXNZvKqrIU3P9vJdZy         y9ig=="
+    },
+    {
+      "Name": "X-Google-DKIM-Signature",
+      "Value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20230601; t=1749189827; x=1749794627;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;        bh=j/Js+inzlOZAx8qQM/5aOfsr7kWNjMYN3QgiiuIi+XE=;        b=Z01MfuBpV1bw8Tin+focumyp/tCvNnomWn6QVQ2gyQyuhW8KodArm9tEaURFbQpnsW         SW+rknpZiG2fOKDAzKLycCD0xTgExUeKNKkmZ+pYMATxPBCiGY5SBS3klh0I846GvkS2         PYBCe7+vHQ0BDuLyql5tlYKB2vC5s+i9O4WLaS4XBQskLTuJnjMEHyZfN2j2TrXonx+Q         LmPVo9kC4djVKr49/918EIhTxsaafdYr/lef1fz+DoOVJGUvZgyJ+0xBwpXFAHZDPbyt         R0LyWtV2f4By3RGv9JM3NiQik9VLgpaSZrCpnFiaT21vIXdw2gBb9Pd5KBEDJjOsedkr         J/dA=="
+    },
+    {
+      "Name": "X-Gm-Message-State",
+      "Value": "AOJu0YxQ4/fcKrnvrualYyqSZzlyseNqI6grqN4uWalcGajutJq4HQLy\tMSAwdoZ6gL2X3zRZEf7Le2fAqXzZ5TLWzSjE9etIaMQ2+WBPIVC4vhIJHfLsdO92aWW/YyvR+w5\tLxR4lxdHmWf2IXKY/D3OWgVhxDK+ZBfidpZ1w4p0="
+    },
+    {
+      "Name": "X-Gm-Gg",
+      "Value": "ASbGncuFNvygRQrIvwJAN2PHN9rFAtZMoOWpeVw3qrnoxm5yzwbHHWu2kkPWE4Xm1Nc\t3JchYQ7R0g2UWbBLg6aygLYeAoMTpv04cq0MOAZC4m60lBWnMRPUYsm2KC+9SXXn5BbyAbfJh3a\tVxfuSAvaOP+32MIyXKXV8UaEGQcBFQjFKoJg=="
+    },
+    {
+      "Name": "X-Google-Smtp-Source",
+      "Value": "AGHT+IEdkYRsnyAg6IzopoLJ6eeG38/F4lRz+FNh+aytzyY8yCSJzDKimy2ui+2qIFDew42BRGOpt0lLcE/mbs9UD68="
+    },
+    {
+      "Name": "X-Received",
+      "Value": "by 2002:a17:906:4fca:b0:ad8:9a3b:b274 with SMTP id a640c23a62f3a-ade1aaff72bmr173875666b.52.1749189827173; Thu, 05 Jun 2025 23:03:47 -0700 (PDT)"
+    },
+    {
+      "Name": "MIME-Version",
+      "Value": "1.0"
+    },
+    {
+      "Name": "References",
+      "Value": "<CAB_eko-Ewue4Emx8DMn1cyysSpg0gnjWXHR6mSduzjSfQ-OW4A@mail.gmail.com>"
+    },
+    {
+      "Name": "In-Reply-To",
+      "Value": "<CAB_eko-Ewue4Emx8DMn1cyysSpg0gnjWXHR6mSduzjSfQ-OW4A@mail.gmail.com>"
+    },
+    {
+      "Name": "X-Gm-Features",
+      "Value": "AX0GCFsUzUCL0x4uh5WHzs-mEiHIf619LmsswAir90mkYBDf_uxapd9rQ5-LWbw"
+    },
+    {
+      "Name": "Message-ID",
+      "Value": "<CAB_eko9FTiZqB16OScSN=NDTAxfjCoiyFf6HmFLR5utZ9s_HBA@mail.gmail.com>"
+    }
+  ],
+  "Attachments": []
+}
