@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Método GET para verificar que el endpoint está activo
+// Método GET para verificar que el endpoint está activo.
 export async function GET() {
   return NextResponse.json(
     { 
