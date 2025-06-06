@@ -3,21 +3,25 @@
 import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Email, Label } from '@/lib/types';
-import { MOCK_EMAILS, MOCK_LABELS, getEmailsByLabel, getArchivedEmails } from '@/lib/data';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useLabels } from '@/hooks/useLabels';
+import { useEmails } from '@/hooks/useEmails';
 import { LabelSidebar } from '@/components/LabelSidebar';
 import { EmailCard } from '@/components/EmailCard';
 import { KanbanView } from '@/components/KanbanView';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { UserButton } from '@clerk/nextjs';
 import { Inbox, LayoutDashboard } from 'lucide-react';
 
 type ViewMode = 'labels' | 'kanban' | 'archived';
 
 export default function Dashboard() {
-  const [emails, setEmails] = useLocalStorage<Email[]>('emails', MOCK_EMAILS);
-  const [labels, setLabels] = useLocalStorage<Label[]>('labels', MOCK_LABELS);
+  const { labels, createLabel, updateLabel, deleteLabel, isLoading: labelsLoading } = useLabels();
+  const { emails, updateEmail, archiveEmail, isLoading: emailsLoading } = useEmails();
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('labels');
+
+  // Mostrar loading si cualquiera de los hooks está cargando
+  const isLoading = labelsLoading || emailsLoading;
 
   // Filtrar correos según la vista actual
   const displayedEmails = useMemo(() => {
@@ -46,13 +50,15 @@ export default function Dashboard() {
   const emailCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     labels.forEach(label => {
-      counts[label.id] = getEmailsByLabel(label.id).length;
+      counts[label.id] = emails.filter(email => 
+        email.labels.includes(label.id) && !email.archived
+      ).length;
     });
     return counts;
   }, [emails, labels]);
 
   const archivedCount = useMemo(() => 
-    getArchivedEmails().length, [emails]
+    emails.filter(email => email.archived).length, [emails]
   );
 
   const inboxCount = useMemo(() => 
@@ -60,53 +66,57 @@ export default function Dashboard() {
   );
 
   // Funciones para manejar etiquetas
-  const handleCreateLabel = (labelData: Omit<Label, 'id'>) => {
-    const newLabel: Label = {
-      ...labelData,
-      id: Date.now().toString(),
-    };
-    setLabels(prev => [...prev, newLabel]);
+  const handleCreateLabel = async (labelData: Omit<Label, 'id'>) => {
+    try {
+      await createLabel(labelData);
+    } catch (error) {
+      console.error('Error creando etiqueta:', error);
+    }
   };
 
-  const handleUpdateLabel = (labelId: string, updates: Partial<Label>) => {
-    setLabels(prev => 
-      prev.map(label => 
-        label.id === labelId ? { ...label, ...updates } : label
-      )
-    );
+  const handleUpdateLabel = async (labelId: string, updates: Partial<Label>) => {
+    try {
+      await updateLabel(labelId, updates);
+    } catch (error) {
+      console.error('Error actualizando etiqueta:', error);
+    }
   };
 
-  const handleDeleteLabel = (labelId: string) => {
-    setLabels(prev => prev.filter(label => label.id !== labelId));
-    
-    // Remover la etiqueta de todos los correos
-    setEmails(prev => 
-      prev.map(email => ({
-        ...email,
-        labels: email.labels.filter(id => id !== labelId)
-      }))
-    );
-    
-    if (selectedLabel === labelId) {
-      setSelectedLabel(null);
+  const handleDeleteLabel = async (labelId: string) => {
+    try {
+      await deleteLabel(labelId);
+      
+      // Remover la etiqueta de todos los correos que la tenían
+      const emailsWithLabel = emails.filter(email => email.labels.includes(labelId));
+      
+      for (const email of emailsWithLabel) {
+        const newLabels = email.labels.filter(id => id !== labelId);
+        await updateEmail(email.id, { labels: newLabels });
+      }
+      
+      if (selectedLabel === labelId) {
+        setSelectedLabel(null);
+      }
+    } catch (error) {
+      console.error('Error eliminando etiqueta:', error);
     }
   };
 
   // Funciones para manejar correos
-  const handleArchiveEmail = (emailId: string) => {
-    setEmails(prev => 
-      prev.map(email => 
-        email.id === emailId ? { ...email, archived: true } : email
-      )
-    );
+  const handleArchiveEmail = async (emailId: string) => {
+    try {
+      await archiveEmail(emailId);
+    } catch (error) {
+      console.error('Error archivando correo:', error);
+    }
   };
 
-  const handleUpdateEmail = (emailId: string, updates: Partial<Email>) => {
-    setEmails(prev => 
-      prev.map(email => 
-        email.id === emailId ? { ...email, ...updates } : email
-      )
-    );
+  const handleUpdateEmail = async (emailId: string, updates: Partial<Email>) => {
+    try {
+      await updateEmail(emailId, updates);
+    } catch (error) {
+      console.error('Error actualizando correo:', error);
+    }
   };
 
   const handleShowArchived = () => {
@@ -123,6 +133,18 @@ export default function Dashboard() {
     setSelectedLabel(labelId);
     setViewMode('labels');
   };
+
+  // Mostrar estado de carga
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex bg-background">
@@ -185,8 +207,9 @@ export default function Dashboard() {
                 )}
               </div>
               
-              {/* Toggle de tema */}
+              {/* Toggle de tema y usuario */}
               <ThemeToggle />
+              <UserButton afterSignOutUrl="/" />
             </div>
           </div>
         </div>

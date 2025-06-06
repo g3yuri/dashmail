@@ -4,8 +4,7 @@ import { Email, Label } from '@/lib/types';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Archive, Clock, User, Tag } from 'lucide-react';
-import { formatDistance } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatRelativeTime } from '@/lib/temporal-utils';
 
 interface EmailCardProps {
   email: Email;
@@ -52,10 +51,7 @@ export function EmailCard({ email, labels, onArchive, className }: EmailCardProp
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
             <span>
-              {formatDistance(email.date, new Date(), { 
-                addSuffix: true,
-                locale: es 
-              })}
+              {formatRelativeTime(email.date, 'es')}
             </span>
           </div>
           
