@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { emails, attachments, labels, emailLabels, users, webhookConfig } from "./schema";
+import { emails, attachments, labels, emailLabels, users, webhookConfig } from "./schema.text";
 
 export const attachmentsRelations = relations(attachments, ({one}) => ({
 	email: one(emails, {
