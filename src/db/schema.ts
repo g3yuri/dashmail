@@ -32,6 +32,7 @@ export const emailsTable = sqliteTable("emails", {
   textBody: text("text_body"),
   htmlBody: text("html_body"),
   summary: text("summary"), // Resumen generado automáticamente
+  aiSummary: text("ai_summary"), // Resumen generado por IA
   status: text("status").notNull().default("pending"), // pending, in-progress, completed, reviewed
   archived: int("archived", { mode: 'boolean' }).notNull().default(false),
   receivedAt: int("received_at", { mode: 'timestamp' }).notNull(),

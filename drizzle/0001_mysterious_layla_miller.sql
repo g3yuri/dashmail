@@ -1,0 +1,1 @@
+ALTER TABLE `emails` ADD `ai_summary` text;

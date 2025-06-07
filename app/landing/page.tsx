@@ -29,6 +29,9 @@ export default function LandingPage() {
   const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    // Forzar modo oscuro en el landing page
+    document.documentElement.classList.add('dark');
+    
     const ctx = gsap.context(() => {
       // Animación del header
       gsap.fromTo(headerRef.current, 
@@ -131,22 +134,6 @@ export default function LandingPage() {
         }
       }
 
-      // Animación del footer
-      gsap.fromTo(footerRef.current,
-        { y: 100, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: footerRef.current,
-            start: "top 90%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-
       // Animación de hover para las cards
       const cards = document.querySelectorAll('.hover-card');
       cards.forEach(card => {
@@ -158,23 +145,17 @@ export default function LandingPage() {
         });
       });
 
-      // Animación de floating para los iconos
-      gsap.to('.floating-icon', {
-        y: -10,
-        duration: 2,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: 0.3
-      });
-
     });
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      // Remover la clase dark al desmontar (en caso de navegar a otra página)
+      document.documentElement.classList.remove('dark');
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
+    <div className="dark min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900">
       {/* Header */}
       <header ref={headerRef} className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
@@ -182,10 +163,10 @@ export default function LandingPage() {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center floating-icon">
               <Mail className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">DashMail</span>
+            <span className="text-xl font-bold text-white">DashMail</span>
           </div>
           <Link href="/dashboard">
-            <Button variant="outline" className="hover-card">
+            <Button variant="outline" className="hover-card border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">
               Ir al Dashboard
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -196,22 +177,22 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section ref={heroRef} className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
             Gestiona tus correos con
-            <span className="text-blue-600 dark:text-blue-400"> inteligencia</span>
+            <span className="text-blue-400"> inteligencia</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             DashMail combina etiquetas inteligentes, vista Kanban y filtros avanzados 
             para transformar tu bandeja de entrada en un sistema de productividad.
           </p>
           <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
-              <Button size="lg" className="text-lg px-8 py-3 hover-card">
+              <Button size="lg" className="text-lg px-8 py-3 hover-card bg-blue-600 hover:bg-blue-700">
                 Comenzar Gratis
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-3 hover-card">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-3 hover-card border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">
               Ver Demo
             </Button>
           </div>
@@ -221,82 +202,82 @@ export default function LandingPage() {
       {/* Features Section */}
       <section ref={featuresRef} className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Funcionalidades Principales
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Todo lo que necesitas para mantener tu email organizado y ser más productivo
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <Tags className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="w-12 h-12 bg-blue-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <Tags className="w-6 h-6 text-blue-400" />
               </div>
-              <CardTitle>Etiquetas Inteligentes</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Etiquetas Inteligentes</CardTitle>
+              <CardDescription className="text-gray-300">
                 Organiza automáticamente tus correos con etiquetas personalizables y filtros avanzados
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <LayoutDashboard className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="w-12 h-12 bg-green-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <LayoutDashboard className="w-6 h-6 text-green-400" />
               </div>
-              <CardTitle>Vista Kanban</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Vista Kanban</CardTitle>
+              <CardDescription className="text-gray-300">
                 Gestiona el estado de tus emails como tareas con drag & drop entre columnas
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <Filter className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <div className="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <Filter className="w-6 h-6 text-purple-400" />
               </div>
-              <CardTitle>Filtros Avanzados</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Filtros Avanzados</CardTitle>
+              <CardDescription className="text-gray-300">
                 Usa sintaxis filtrex o descripciones en lenguaje natural para filtrar correos
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <Archive className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <div className="w-12 h-12 bg-orange-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <Archive className="w-6 h-6 text-orange-400" />
               </div>
-              <CardTitle>Archivo Inteligente</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Archivo Inteligente</CardTitle>
+              <CardDescription className="text-gray-300">
                 Archiva correos con un clic y mantén tu bandeja limpia y organizada
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <Zap className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="w-12 h-12 bg-red-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <Zap className="w-6 h-6 text-red-400" />
               </div>
-              <CardTitle>Tiempo Real</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Tiempo Real</CardTitle>
+              <CardDescription className="text-gray-300">
                 Persistencia en base de datos y sincronización instantánea de cambios
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="feature-card hover-card hover:shadow-lg transition-shadow">
+          <Card className="feature-card hover-card hover:shadow-lg transition-shadow bg-gray-800 border-gray-700">
             <CardHeader>
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
-                <Star className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="w-12 h-12 bg-indigo-900 rounded-lg flex items-center justify-center mb-4 floating-icon">
+                <Star className="w-6 h-6 text-indigo-400" />
               </div>
-              <CardTitle>Diseño Moderno</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Diseño Moderno</CardTitle>
+              <CardDescription className="text-gray-300">
                 Interfaz limpia, responsive y con soporte completo para modo oscuro
               </CardDescription>
             </CardHeader>
@@ -305,11 +286,11 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section ref={benefitsRef} className="bg-white dark:bg-gray-800 py-16">
+      <section ref={benefitsRef} className="bg-gray-800 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 ¿Por qué elegir DashMail?
               </h2>
             </div>
@@ -320,8 +301,8 @@ export default function LandingPage() {
                   <div className="benefit-item flex items-start space-x-3">
                     <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Zero configuración</h3>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <h3 className="font-semibold text-white">Zero configuración</h3>
+                      <p className="text-gray-300">
                         Comienza a usar inmediatamente sin instalaciones complejas
                       </p>
                     </div>
@@ -330,8 +311,8 @@ export default function LandingPage() {
                   <div className="benefit-item flex items-start space-x-3">
                     <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Gestión profesional</h3>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <h3 className="font-semibold text-white">Gestión profesional</h3>
+                      <p className="text-gray-300">
                         Base de datos robusta con autenticación y seguridad por usuario
                       </p>
                     </div>
@@ -340,8 +321,8 @@ export default function LandingPage() {
                   <div className="benefit-item flex items-start space-x-3">
                     <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Privacidad garantizada</h3>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <h3 className="font-semibold text-white">Privacidad garantizada</h3>
+                      <p className="text-gray-300">
                         Tus datos están seguros con autenticación de Clerk y base de datos aislada
                       </p>
                     </div>
@@ -350,8 +331,8 @@ export default function LandingPage() {
                   <div className="benefit-item flex items-start space-x-3">
                     <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Multiplataforma</h3>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <h3 className="font-semibold text-white">Multiplataforma</h3>
+                      <p className="text-gray-300">
                         Funciona en cualquier dispositivo con navegador web
                       </p>
                     </div>
@@ -359,13 +340,13 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="cta-card bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white hover-card">
+              <div className="cta-card bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl p-8 text-white hover-card">
                 <h3 className="text-2xl font-bold mb-4">¿Listo para comenzar?</h3>
                 <p className="mb-6 opacity-90">
                   Transforma tu gestión de correos hoy mismo con DashMail
                 </p>
                 <Link href="/dashboard">
-                  <Button variant="secondary" size="lg" className="w-full">
+                  <Button variant="secondary" size="lg" className="w-full bg-white text-gray-900 hover:bg-gray-100">
                     Acceder al Dashboard
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
@@ -377,7 +358,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer ref={footerRef} className="bg-gray-900 dark:bg-black text-white py-12">
+      <footer ref={footerRef} className="bg-black text-white py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center floating-icon">

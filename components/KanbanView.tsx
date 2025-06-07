@@ -16,8 +16,9 @@ import { EmailCard } from './EmailCard';
 interface KanbanViewProps {
   emails: Email[];
   labels: Label[];
-  onUpdateEmail: (emailId: string, updates: Partial<Email>) => void;
-  onArchiveEmail: (emailId: string) => void;
+  onUpdateEmail: (emailId: string, updates: Partial<Email>) => Promise<void>;
+  onArchiveEmail: (emailId: string) => Promise<void>;
+  onEmailClick?: (email: Email) => void;
 }
 
 export function KanbanView({
@@ -25,6 +26,7 @@ export function KanbanView({
   labels,
   onUpdateEmail,
   onArchiveEmail,
+  onEmailClick,
 }: KanbanViewProps) {
   const [activeEmail, setActiveEmail] = useState<Email | null>(null);
 
@@ -37,7 +39,7 @@ export function KanbanView({
     setActiveEmail(email || null);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveEmail(null);
 
@@ -52,43 +54,51 @@ export function KanbanView({
     // Actualizar el email solo si el status cambió
     const email = emails.find(e => e.id === emailId);
     if (email && email.status !== newStatus) {
-      onUpdateEmail(emailId, { status: newStatus });
+      await onUpdateEmail(emailId, { status: newStatus });
     }
   };
 
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-6 h-full overflow-auto p-6">
-        {EMAIL_STATUSES.map((status) => {
-          const statusEmails = getEmailsByStatus(status.value);
-          
-          return (
-            <div key={status.value} className="flex-1 min-w-80">
-              <KanbanColumn
-                id={status.value}
-                title={status.label}
-                emails={statusEmails}
+    <div className="h-full flex flex-col">
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        {/* Container con ancho controlado y scroll horizontal */}
+        <div className="flex-1 overflow-x-auto overflow-y-hidden">
+          <div className="flex gap-6 h-full p-6 min-w-max">
+            {EMAIL_STATUSES.map((status) => {
+              const statusEmails = getEmailsByStatus(status.value);
+              
+              return (
+                <div key={status.value} className="w-80 flex-shrink-0">
+                  <KanbanColumn
+                    id={status.value}
+                    title={status.label}
+                    emails={statusEmails}
+                    labels={labels}
+                    onArchiveEmail={onArchiveEmail}
+                    onEmailClick={onEmailClick}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <DragOverlay>
+          {activeEmail ? (
+            <div className="rotate-3 opacity-90 transform">
+              <EmailCard
+                email={activeEmail}
                 labels={labels}
-                onArchiveEmail={onArchiveEmail}
+                className="cursor-grabbing"
               />
             </div>
-          );
-        })}
-      </div>
-
-      <DragOverlay>
-        {activeEmail ? (
-          <EmailCard
-            email={activeEmail}
-            labels={labels}
-            className="rotate-3 opacity-90"
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 } 

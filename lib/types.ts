@@ -3,11 +3,15 @@ export interface Email {
   subject: string;
   sender: string;
   summary: string;
+  aiSummary?: string;
   date: Date;
   labels: string[];
   status: EmailStatus;
   archived: boolean;
   content?: string;
+  textBody?: string;
+  htmlBody?: string;
+  fromName?: string;
 }
 
 export type EmailStatus = 'pending' | 'in-progress' | 'completed' | 'reviewed';

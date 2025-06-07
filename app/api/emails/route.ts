@@ -21,6 +21,7 @@ export async function GET() {
             textBody: emailsTable.textBody,
             htmlBody: emailsTable.htmlBody,
             summary: emailsTable.summary,
+            aiSummary: emailsTable.aiSummary,
             status: emailsTable.status,
             archived: emailsTable.archived,
             receivedAt: emailsTable.receivedAt,
@@ -47,11 +48,15 @@ export async function GET() {
           subject: row.subject,
           sender: row.fromEmail,
           summary: row.summary || '',
+          aiSummary: row.aiSummary || '',
           date: row.receivedAt,
           labels: [],
           status: row.status as 'pending' | 'in-progress' | 'completed' | 'reviewed',
           archived: !!row.archived,
           content: row.textBody || row.htmlBody,
+          textBody: row.textBody,
+          htmlBody: row.htmlBody,
+          fromName: row.fromName,
         });
       }
       

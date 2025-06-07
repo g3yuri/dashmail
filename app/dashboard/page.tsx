@@ -1,24 +1,27 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Email, Label } from '@/lib/types';
+import { useState, useEffect, useMemo } from 'react';
 import { useLabels } from '@/hooks/useLabels';
 import { useEmails } from '@/hooks/useEmails';
 import { LabelSidebar } from '@/components/LabelSidebar';
 import { EmailCard } from '@/components/EmailCard';
+import { EmailDetailsDialog } from '@/components/EmailDetailsDialog';
 import { KanbanView } from '@/components/KanbanView';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UserButton } from '@clerk/nextjs';
+import { Label, Email, EmailStatus } from '@/lib/types';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Inbox, LayoutDashboard } from 'lucide-react';
 
 type ViewMode = 'labels' | 'kanban' | 'archived';
 
 export default function Dashboard() {
   const { labels, createLabel, updateLabel, deleteLabel, isLoading: labelsLoading } = useLabels();
-  const { emails, updateEmail, archiveEmail, unarchiveEmail, isLoading: emailsLoading } = useEmails();
+  const { emails, updateEmail, archiveEmail, unarchiveEmail, isLoading: emailsLoading, refreshEmails } = useEmails();
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('labels');
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
 
   // Cargar modo de vista desde localStorage al inicializar
   useEffect(() => {
@@ -35,9 +38,6 @@ export default function Dashboard() {
       localStorage.setItem('dashboard-view-mode', newViewMode);
     }
   };
-
-  // Mostrar loading si cualquiera de los hooks está cargando
-  const isLoading = labelsLoading || emailsLoading;
 
   // Filtrar correos según la vista actual
   const displayedEmails = useMemo(() => {
@@ -81,10 +81,12 @@ export default function Dashboard() {
     emails.filter(email => !email.archived).length, [emails]
   );
 
-  // Funciones para manejar etiquetas
+  // Funciones para manejar etiquetas con loading states
   const handleCreateLabel = async (labelData: Omit<Label, 'id'>) => {
     try {
       await createLabel(labelData);
+      // Refrescar emails para aplicar el nuevo filtro
+      await refreshEmails();
     } catch (error) {
       console.error('Error creando etiqueta:', error);
     }
@@ -93,6 +95,8 @@ export default function Dashboard() {
   const handleUpdateLabel = async (labelId: string, updates: Partial<Label>) => {
     try {
       await updateLabel(labelId, updates);
+      // Refrescar emails para aplicar los cambios del filtro
+      await refreshEmails();
     } catch (error) {
       console.error('Error actualizando etiqueta:', error);
     }
@@ -143,23 +147,39 @@ export default function Dashboard() {
     }
   };
 
-  const handleShowArchived = () => {
-    handleViewModeChange('archived');
-    setSelectedLabel(null);
+  const handleStatusChange = async (emailId: string, status: EmailStatus) => {
+    try {
+      await updateEmail(emailId, { status });
+    } catch (error) {
+      console.error('Error actualizando estado del correo:', error);
+    }
   };
 
-  const handleShowInbox = () => {
-    handleViewModeChange('labels');
-    setSelectedLabel(null);
+  const handleEmailClick = (email: Email) => {
+    setSelectedEmail(email);
+    setIsEmailDialogOpen(true);
   };
 
+  // Función para seleccionar etiqueta
   const handleSelectLabel = (labelId: string | null) => {
     setSelectedLabel(labelId);
-    handleViewModeChange('labels');
+    setViewMode('labels');
   };
 
-  // Mostrar estado de carga
-  if (isLoading) {
+  // Función para mostrar archivados
+  const handleShowArchived = () => {
+    setViewMode('archived');
+    setSelectedLabel(null);
+  };
+
+  // Función para mostrar bandeja de entrada
+  const handleShowInbox = () => {
+    setViewMode('labels');
+    setSelectedLabel(null);
+  };
+
+  // Mostrar estado de carga inicial
+  if (labelsLoading || emailsLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -191,12 +211,12 @@ export default function Dashboard() {
       )}
 
       {/* Contenido principal */}
-      <div className="flex-1 flex flex-col">
-        {/* Header con tabs */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center justify-between p-4">
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header con tabs - ancho fijo */}
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 min-w-0">
               {/* Título dinámico */}
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground min-w-0 flex-shrink-0">
                 {viewMode === 'archived' ? (
                   'Correos archivados'
                 ) : viewMode === 'kanban' ? (
@@ -208,7 +228,7 @@ export default function Dashboard() {
                 )}
               </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-shrink-0">
 
             <Tabs 
               value={viewMode === 'archived' ? 'labels' : viewMode} 
@@ -240,14 +260,15 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Contenido de la vista */}
-        <div className="flex-1 overflow-hidden">
+        {/* Contenido de la vista - con overflow control */}
+        <div className="flex-1 overflow-hidden min-w-0">
           {viewMode === 'kanban' ? (
             <KanbanView
               emails={displayedEmails}
               labels={labels}
               onUpdateEmail={handleUpdateEmail}
               onArchiveEmail={handleArchiveEmail}
+              onEmailClick={handleEmailClick}
             />
           ) : (
             <div className="h-full overflow-auto">
@@ -270,6 +291,8 @@ export default function Dashboard() {
                         labels={labels}
                         onArchive={viewMode !== 'archived' ? handleArchiveEmail : undefined}
                         onUnarchive={viewMode === 'archived' ? handleUnarchiveEmail : undefined}
+                        onStatusChange={handleStatusChange}
+                        onClick={() => handleEmailClick(email)}
                       />
                     ))}
                   </div>
@@ -279,6 +302,17 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Modal de detalles del correo */}
+      <EmailDetailsDialog
+        email={selectedEmail}
+        labels={labels}
+        open={isEmailDialogOpen}
+        onOpenChange={setIsEmailDialogOpen}
+        onArchive={handleArchiveEmail}
+        onUnarchive={handleUnarchiveEmail}
+        onStatusChange={handleStatusChange}
+      />
     </div>
   );
 } 

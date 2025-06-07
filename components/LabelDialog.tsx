@@ -38,6 +38,7 @@ export function LabelDialog({
   const [validationMessage, setValidationMessage] = useState('');
   const [leftPanelWidth, setLeftPanelWidth] = useState(60); // Porcentaje
   const [isResizing, setIsResizing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const resizeRef = useRef<HTMLDivElement>(null);
   
   const { emails } = useEmails();
@@ -124,15 +125,25 @@ export function LabelDialog({
     }
   }, [initialData, open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || isSubmitting) return;
 
-    onSubmit({
-      name: name.trim(),
-      color,
-      filter: filter.trim() || undefined,
-    });
+    try {
+      setIsSubmitting(true);
+      await onSubmit({
+        name: name.trim(),
+        color,
+        filter: filter.trim() || undefined,
+      });
+      
+      // Cerrar el diálogo solo si el submit fue exitoso
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error al enviar formulario:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getValidationIcon = () => {
@@ -230,9 +241,16 @@ export function LabelDialog({
               </Button>
               <Button 
                 onClick={handleSubmit} 
-                disabled={!name.trim()}
+                disabled={!name.trim() || isSubmitting}
               >
-                {initialData ? 'Actualizar' : 'Crear'} etiqueta
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                    {initialData ? 'Actualizando...' : 'Creando...'}
+                  </>
+                ) : (
+                  `${initialData ? 'Actualizar' : 'Crear'} etiqueta`
+                )}
               </Button>
               <Button
                 variant="ghost"

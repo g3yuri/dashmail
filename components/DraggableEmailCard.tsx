@@ -9,12 +9,14 @@ interface DraggableEmailCardProps {
   email: Email;
   labels: Label[];
   onArchive: (emailId: string) => void;
+  onClick?: () => void;
 }
 
 export function DraggableEmailCard({
   email,
   labels,
   onArchive,
+  onClick,
 }: DraggableEmailCardProps) {
   const {
     attributes,
@@ -43,6 +45,7 @@ export function DraggableEmailCard({
         email={email}
         labels={labels}
         onArchive={onArchive}
+        onClick={onClick}
         className={isDragging ? 'shadow-lg' : ''}
       />
     </div>

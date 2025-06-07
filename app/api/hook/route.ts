@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/db/index';
 import { emailsTable, attachmentsTable } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
+import { generateEmailSummary } from '@/lib/ai';
 
 // Tipo para el webhook de Postmark Inbound
 interface PostmarkInboundWebhook {
@@ -103,6 +104,10 @@ export async function POST(request: NextRequest) {
     const summary = generateSummary(body.TextBody || body.StrippedTextReply);
     const recipientEmail = body.ToFull[0].Email;
 
+    // Generar resumen con IA
+    const emailContent = body.TextBody || body.StrippedTextReply || '';
+    const aiSummary = await generateEmailSummary(emailContent, body.Subject);
+
     // Insertar el email en la base de datos
     await db.insert(emailsTable).values({
       id: emailId,
@@ -114,6 +119,7 @@ export async function POST(request: NextRequest) {
       textBody: body.TextBody || null,
       htmlBody: body.HtmlBody || null,
       summary: summary,
+      aiSummary: aiSummary,
       status: 'pending',
       archived: false,
       receivedAt: receivedAt,
