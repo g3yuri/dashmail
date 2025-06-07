@@ -17,7 +17,6 @@ export interface Label {
   name: string;
   color: string;
   filter?: string;
-  promptFilter?: string;
 }
 
 export interface KanbanColumn {

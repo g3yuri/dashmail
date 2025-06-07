@@ -18,13 +18,14 @@ interface LabelSidebarProps {
   selectedLabel: string | null;
   onSelectLabel: (labelId: string | null) => void;
   onCreateLabel: (label: Omit<Label, 'id'>) => void;
-  onUpdateLabel: (labelId: string, label: Partial<Label>) => void;
+  onUpdateLabel: (labelId: string, updates: Partial<Label>) => void;
   onDeleteLabel: (labelId: string) => void;
   onShowArchived: () => void;
   onShowInbox: () => void;
   emailCounts: Record<string, number>;
   archivedCount: number;
   inboxCount: number;
+  isArchivedView?: boolean;
 }
 
 export function LabelSidebar({
@@ -39,6 +40,7 @@ export function LabelSidebar({
   emailCounts,
   archivedCount,
   inboxCount,
+  isArchivedView = false,
 }: LabelSidebarProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingLabel, setEditingLabel] = useState<Label | null>(null);
@@ -97,7 +99,7 @@ export function LabelSidebar({
       <div className="space-y-1">
         {/* Bandeja de entrada */}
         <Button
-          variant={selectedLabel === null ? "secondary" : "ghost"}
+          variant={selectedLabel === null && !isArchivedView ? "secondary" : "ghost"}
           className="w-full justify-start gap-2 h-9"
           onClick={onShowInbox}
         >
@@ -161,7 +163,7 @@ export function LabelSidebar({
 
         {/* Archivados */}
         <Button
-          variant="ghost"
+          variant={isArchivedView ? "secondary" : "ghost"}
           className="w-full justify-start gap-2 h-9 mt-4"
           onClick={onShowArchived}
         >

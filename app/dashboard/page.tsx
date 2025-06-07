@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Email, Label } from '@/lib/types';
 import { useLabels } from '@/hooks/useLabels';
@@ -16,9 +16,25 @@ type ViewMode = 'labels' | 'kanban' | 'archived';
 
 export default function Dashboard() {
   const { labels, createLabel, updateLabel, deleteLabel, isLoading: labelsLoading } = useLabels();
-  const { emails, updateEmail, archiveEmail, isLoading: emailsLoading } = useEmails();
+  const { emails, updateEmail, archiveEmail, unarchiveEmail, isLoading: emailsLoading } = useEmails();
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('labels');
+
+  // Cargar modo de vista desde localStorage al inicializar
+  useEffect(() => {
+    const savedViewMode = localStorage.getItem('dashboard-view-mode') as ViewMode;
+    if (savedViewMode && (savedViewMode === 'labels' || savedViewMode === 'kanban')) {
+      setViewMode(savedViewMode);
+    }
+  }, []);
+
+  // Guardar modo de vista en localStorage cuando cambie
+  const handleViewModeChange = (newViewMode: ViewMode) => {
+    setViewMode(newViewMode);
+    if (newViewMode === 'labels' || newViewMode === 'kanban') {
+      localStorage.setItem('dashboard-view-mode', newViewMode);
+    }
+  };
 
   // Mostrar loading si cualquiera de los hooks está cargando
   const isLoading = labelsLoading || emailsLoading;
@@ -111,6 +127,14 @@ export default function Dashboard() {
     }
   };
 
+  const handleUnarchiveEmail = async (emailId: string) => {
+    try {
+      await unarchiveEmail(emailId);
+    } catch (error) {
+      console.error('Error desarchivando correo:', error);
+    }
+  };
+
   const handleUpdateEmail = async (emailId: string, updates: Partial<Email>) => {
     try {
       await updateEmail(emailId, updates);
@@ -120,18 +144,18 @@ export default function Dashboard() {
   };
 
   const handleShowArchived = () => {
-    setViewMode('archived');
+    handleViewModeChange('archived');
     setSelectedLabel(null);
   };
 
   const handleShowInbox = () => {
-    setViewMode('labels');
+    handleViewModeChange('labels');
     setSelectedLabel(null);
   };
 
   const handleSelectLabel = (labelId: string | null) => {
     setSelectedLabel(labelId);
-    setViewMode('labels');
+    handleViewModeChange('labels');
   };
 
   // Mostrar estado de carga
@@ -162,6 +186,7 @@ export default function Dashboard() {
           emailCounts={emailCounts}
           archivedCount={archivedCount}
           inboxCount={inboxCount}
+          isArchivedView={viewMode === 'archived'}
         />
       )}
 
@@ -170,13 +195,28 @@ export default function Dashboard() {
         {/* Header con tabs */}
         <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center justify-between p-4">
+              {/* Título dinámico */}
+              <div className="text-sm text-muted-foreground">
+                {viewMode === 'archived' ? (
+                  'Correos archivados'
+                ) : viewMode === 'kanban' ? (
+                  'Vista Kanban por estado'
+                ) : selectedLabel ? (
+                  `Etiqueta: ${labels.find(l => l.id === selectedLabel)?.name}`
+                ) : (
+                  'Bandeja de entrada'
+                )}
+              </div>
+
+            <div className="flex items-center gap-4">
+
             <Tabs 
               value={viewMode === 'archived' ? 'labels' : viewMode} 
               onValueChange={(value) => {
                 if (value === 'kanban') {
-                  setViewMode('kanban');
+                  handleViewModeChange('kanban');
                 } else {
-                  setViewMode('labels');
+                  handleViewModeChange('labels');
                 }
                 setSelectedLabel(null);
               }}
@@ -192,20 +232,6 @@ export default function Dashboard() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-
-            <div className="flex items-center gap-4">
-              {/* Título dinámico */}
-              <div className="text-sm text-muted-foreground">
-                {viewMode === 'archived' ? (
-                  'Correos archivados'
-                ) : viewMode === 'kanban' ? (
-                  'Vista Kanban por estado'
-                ) : selectedLabel ? (
-                  `Etiqueta: ${labels.find(l => l.id === selectedLabel)?.name}`
-                ) : (
-                  'Bandeja de entrada'
-                )}
-              </div>
               
               {/* Toggle de tema y usuario */}
               <ThemeToggle />
@@ -243,6 +269,7 @@ export default function Dashboard() {
                         email={email}
                         labels={labels}
                         onArchive={viewMode !== 'archived' ? handleArchiveEmail : undefined}
+                        onUnarchive={viewMode === 'archived' ? handleUnarchiveEmail : undefined}
                       />
                     ))}
                   </div>

@@ -71,6 +71,11 @@ export function useEmails() {
     return updateEmail(emailId, { archived: true });
   };
 
+  // Desarchivar correo
+  const unarchiveEmail = async (emailId: string) => {
+    return updateEmail(emailId, { archived: false });
+  };
+
   // Cambiar estado del correo
   const changeEmailStatus = async (emailId: string, status: Email['status']) => {
     return updateEmail(emailId, { status });
@@ -92,6 +97,7 @@ export function useEmails() {
     error,
     updateEmail,
     archiveEmail,
+    unarchiveEmail,
     changeEmailStatus,
     updateEmailLabels,
     refreshEmails: fetchEmails,
