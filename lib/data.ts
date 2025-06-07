@@ -84,7 +84,6 @@ export const MOCK_LABELS: Label[] = [
     id: 'importante',
     name: 'Importante',
     color: '#ef4444',
-    promptFilter: 'Emails que requieren acción inmediata o son críticos para el negocio',
   },
   {
     id: 'negocios',
