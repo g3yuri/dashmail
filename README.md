@@ -22,16 +22,16 @@ This is a submission for the [Postmark Challenge: Inbox Innovators](https://dev.
 ### Screenshots:
 
 **Landing Page**
-![Landing Page with modern dark theme and professional design]
+![Landing Page with modern dark theme and professional design](landing.png)
 
 **Dashboard Overview**
-![Main dashboard showing email management with labels and filters]
+![Main dashboard showing email management with labels and filters](dash-labels.png)
 
 **Kanban View**
-![Email workflow management in Kanban board format]
+![Email workflow management in Kanban board format](dash-kanban.png)
 
-**AI-Powered Email Details**
-![Email detail view with AI-generated summaries]
+**AI-Powered Email Details Sumary**
+![Email detail view with AI-generated summaries](sumary.png)
 
 ### Test Instructions:
 1. Visit the demo link above
@@ -42,7 +42,7 @@ This is a submission for the [Postmark Challenge: Inbox Innovators](https://dev.
 
 ## Code Repository
 
-🏗️ **GitHub Repository**: [https://github.com/yourusername/dashmail](https://github.com/yourusername/dashmail)
+🏗️ **GitHub Repository**: [https://github.com/g3yuri/dashmail](https://github.com/g3yuri/dashmail)
 
 The codebase demonstrates modern full-stack development practices with:
 - **Frontend**: Next.js 15 with React 19, TypeScript, and Tailwind CSS
