@@ -27,6 +27,9 @@ This is a submission for the [Postmark Challenge: Inbox Innovators](https://dev.
 **Dashboard Overview**
 ![Main dashboard showing email management with labels and filters](dash-labels.png)
 
+**Filters Editor**
+![Filters Editor](editor-filtros.png)
+
 **Kanban View**
 ![Email workflow management in Kanban board format](dash-kanban.png)
 
