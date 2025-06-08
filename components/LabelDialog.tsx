@@ -14,7 +14,7 @@ import { FilterEditor } from './FilterEditor';
 import { useEmails } from '@/hooks/useEmails';
 import { validateFiltrexExpression, applyFiltrexFilter, PostmarkEmail } from '@/lib/filtrex-utils';
 import { DocumentationPanel } from './DocumentationPanel';
-import { CheckCircle, XCircle, FileText, AlertCircle, X, GripVertical } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, AlertCircle, GripVertical } from 'lucide-react';
 
 interface LabelDialogProps {
   open: boolean;
@@ -252,14 +252,14 @@ export function LabelDialog({
                   `${initialData ? 'Actualizar' : 'Crear'} etiqueta`
                 )}
               </Button>
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onOpenChange(false)}
                 className="h-8 w-8 p-0"
               >
                 <X className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
         </DialogHeader>
