@@ -33,7 +33,7 @@ This is a submission for the [Postmark Challenge: Inbox Innovators](https://dev.
 **Kanban View**
 ![Email workflow management in Kanban board format](dash-kanban.png)
 
-**AI-Powered Email Details Sumary**
+**AI-Powered Email Details Summaries**
 ![Email detail view with AI-generated summaries](sumary.png)
 
 ### Test Instructions:
