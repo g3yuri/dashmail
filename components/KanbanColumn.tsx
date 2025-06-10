@@ -11,6 +11,7 @@ interface KanbanColumnProps {
   emails: Email[];
   labels: Label[];
   onArchiveEmail: (emailId: string) => void;
+  onStatusChange?: (emailId: string, status: EmailStatus) => void;
   onEmailClick?: (email: Email) => void;
 }
 
@@ -20,6 +21,7 @@ export function KanbanColumn({
   emails,
   labels,
   onArchiveEmail,
+  onStatusChange,
   onEmailClick,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -50,6 +52,7 @@ export function KanbanColumn({
               email={email}
               labels={labels}
               onArchive={onArchiveEmail}
+              onStatusChange={onStatusChange}
               onClick={onEmailClick ? () => onEmailClick(email) : undefined}
             />
           ))}

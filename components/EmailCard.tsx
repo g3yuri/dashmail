@@ -55,6 +55,11 @@ export function EmailCard({
     }
   };
 
+  const handleDropdownItemClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
+
   return (
     <Card 
       className={`transition-all hover:shadow-md cursor-pointer ${className}`}
@@ -80,25 +85,39 @@ export function EmailCard({
                   size="icon"
                   className="h-8 w-8 shrink-0"
                   title="Más opciones"
+                  onMouseDown={(e) => {
+                    // Prevenir que el evento se propague al contenedor draggable
+                    e.stopPropagation();
+                  }}
+                  onPointerDown={(e) => {
+                    // Prevenir el drag cuando se hace click en el botón
+                    e.stopPropagation();
+                  }}
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent 
+                align="end"
+                onPointerDown={(e) => {
+                  // Prevenir que el dropdown interfiera con el drag
+                  e.stopPropagation();
+                }}
+              >
                 {/* Cambiar estado */}
-                <DropdownMenuItem onClick={() => handleStatusChange('pending')}>
+                <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => handleStatusChange('pending'))}>
                   <span className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
                   Pendiente
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusChange('in-progress')}>
+                <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => handleStatusChange('in-progress'))}>
                   <span className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
                   En progreso
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusChange('completed')}>
+                <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => handleStatusChange('completed'))}>
                   <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
                   Completado
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusChange('reviewed')}>
+                <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => handleStatusChange('reviewed'))}>
                   <span className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
                   Revisado
                 </DropdownMenuItem>
@@ -108,13 +127,13 @@ export function EmailCard({
                 
                 {/* Archivar/Desarchivar */}
                 {onArchive && !email.archived && (
-                  <DropdownMenuItem onClick={() => onArchive(email.id)}>
+                  <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => onArchive(email.id))}>
                     <Archive className="h-4 w-4 mr-2" />
                     Archivar
                   </DropdownMenuItem>
                 )}
                 {onUnarchive && email.archived && (
-                  <DropdownMenuItem onClick={() => onUnarchive(email.id)}>
+                  <DropdownMenuItem onClick={(e) => handleDropdownItemClick(e, () => onUnarchive(email.id))}>
                     <ArchiveRestore className="h-4 w-4 mr-2" />
                     Desarchivar
                   </DropdownMenuItem>

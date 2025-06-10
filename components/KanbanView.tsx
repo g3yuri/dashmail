@@ -37,12 +37,14 @@ export function KanbanView({
   const handleDragStart = (event: DragStartEvent) => {
     const email = emails.find((e) => e.id === event.active.id);
     setActiveEmail(email || null);
+    console.log('drag start');
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveEmail(null);
-
+    console.log('drag end');
+    
     if (!over) return;
 
     const emailId = active.id as string;
@@ -56,6 +58,10 @@ export function KanbanView({
     if (email && email.status !== newStatus) {
       await onUpdateEmail(emailId, { status: newStatus });
     }
+  };
+
+  const handleStatusChange = async (emailId: string, status: EmailStatus) => {
+    await onUpdateEmail(emailId, { status });
   };
 
   return (
@@ -79,6 +85,7 @@ export function KanbanView({
                     emails={statusEmails}
                     labels={labels}
                     onArchiveEmail={onArchiveEmail}
+                    onStatusChange={handleStatusChange}
                     onEmailClick={onEmailClick}
                   />
                 </div>
